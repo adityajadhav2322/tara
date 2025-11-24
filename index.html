@@ -63,6 +63,37 @@
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.4);
         }
+
+        /* Quote Transition */
+        .quote-container {
+            min-height: 3rem; /* Reserve space to prevent layout jump */
+            transition: opacity 1s ease-in-out;
+            opacity: 1;
+        }
+        .quote-container.fade-out {
+            opacity: 0;
+        }
+
+        /* Modal specific styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-pink-500 via-red-400 to-rose-600 min-h-screen flex items-center justify-center text-white relative">
@@ -73,7 +104,10 @@
     <!-- Main Card -->
     <div class="glass-panel p-8 rounded-3xl shadow-2xl text-center max-w-md w-full mx-4 z-10 transform transition-all hover:scale-[1.02] duration-300">
         
-        <div class="text-6xl text-pink-100 mb-2 heart-beat drop-shadow-lg">❤️</div>
+        <!-- The Clickable Heart Button -->
+        <button id="message-trigger" class="text-6xl text-pink-100 mb-2 heart-beat drop-shadow-lg focus:outline-none transform hover:scale-110 transition duration-300" aria-label="Click for a special message">
+            ❤️
+        </button>
         
         <h1 class="romantic-font text-5xl md:text-6xl font-bold mb-4 text-white drop-shadow-md">
             I love you Tara
@@ -103,8 +137,33 @@
             </div>
         </div>
 
-        <div class="text-sm text-white/80 italic">
+        <!-- Rotating Quote -->
+        <div id="quote-display" class="quote-container text-sm text-white/90 italic font-medium tracking-wide">
             "Every second with you is a gift."
+        </div>
+    </div>
+
+    <!-- Personal Message Modal -->
+    <div id="personal-message-modal" class="modal-overlay">
+        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-11/12 transform transition-all scale-100">
+            <h2 class="romantic-font text-3xl text-pink-600 mb-4 border-b pb-2">A Secret Message Just for You</h2>
+            <p class="text-gray-700 text-md mb-6 text-left" style="white-space: pre-line;">
+                Baby i really hope you find this secret message,
+
+                Actually the thing is in these 86 Days I have realised that i could never live without you and i really love you and i hope you understand this, i really want you to even if i’m not able to convince my parents for our engagement till April i want you to do something. I’m sure that i’ll convince them for marriage till i’m 19 but right now things are a bit complicated i know you understand that but just so you know i really love you and care for you from the bottom of my heart. I’m really really sure about you… my sahiba my everything you are literally my everything my joonam..
+
+                I know we are young but seriously baby I will marry “YOU”
+
+                You are really special to me ❤️ 
+
+                I know this paragraph isn’t much but yep this is all i’m able to think right now im sorry my love i’ll tell you more things afterwards 
+
+                I love you
+            </p>
+            <p class="text-right text-gray-500 text-sm">- Yours, Adi</p>
+            <button onclick="closeModal()" class="mt-6 w-full bg-pink-500 text-white py-2 rounded-lg font-bold hover:bg-pink-600 transition duration-150">
+                Close
+            </button>
         </div>
     </div>
 
@@ -148,10 +207,16 @@
             const heart = document.createElement('div');
             heart.classList.add('heart-bg');
             
-            // Randomize position and animation duration
+            // Randomize position, size, and animation duration
+            const size = Math.random() * 20 + 20; // Size between 20px and 40px
+            heart.style.height = size + "px";
+            heart.style.width = size + "px";
             heart.style.left = Math.random() * 100 + "vw";
             heart.style.animationDuration = Math.random() * 3 + 4 + "s"; // 4-7 seconds
             
+            // Recalculate :before and :after positions based on new size
+            heart.style.setProperty('--heart-size', `${size}px`);
+
             // Randomize color slightly (white with varying opacity)
             heart.style.backgroundColor = `rgba(255, 255, 255, ${Math.random() * 0.3 + 0.1})`;
             
@@ -165,6 +230,60 @@
 
         // Create a heart every 300ms
         setInterval(createHeart, 300);
+
+        // --- QUOTE ROTATOR ---
+        const quotes = [
+            "Every second with you is a gift.",
+            "I love you more than words can say.",
+            "You are my favorite distraction.",
+            "My heart is and always will be yours.",
+            "You make my world brighter.",
+            "Forever is a long time, but I wouldn't mind spending it by your side.",
+            "To the world you may be one person, but to me you are the world."
+        ];
+
+        let currentQuoteIndex = 0;
+        const quoteElement = document.getElementById("quote-display");
+
+        function rotateQuote() {
+            // Fade out
+            quoteElement.classList.add("fade-out");
+
+            // Wait for fade out to finish (1s matches CSS transition)
+            setTimeout(() => {
+                currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+                quoteElement.innerText = `"${quotes[currentQuoteIndex]}"`;
+                
+                // Fade in
+                quoteElement.classList.remove("fade-out");
+            }, 1000); 
+        }
+
+        // Change quote every 6 seconds (1s fade out + 5s display)
+        setInterval(rotateQuote, 6000);
+
+        // --- MODAL LOGIC ---
+        const modal = document.getElementById('personal-message-modal');
+        const trigger = document.getElementById('message-trigger');
+
+        function openModal() {
+            modal.classList.add('open');
+        }
+
+        function closeModal() {
+            modal.classList.remove('open');
+        }
+
+        // Event listener to open the modal when the heart is clicked
+        trigger.addEventListener('click', openModal);
+
+        // Optional: Close modal if clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                closeModal();
+            }
+        });
+
     </script>
 </body>
 </html>
