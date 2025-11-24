@@ -3,288 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For Tara</title>
+    <title>For Tara | August 30, 2025</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@300;400;600&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Nunito:wght@300;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                        romantic: ['Dancing Script', 'cursive'],
+                    },
+                    animation: {
+                        'float': 'float 6s linear infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                }
+            }
+        }
+    </script>
+
     <style>
-        body {
-            font-family: 'Nunito', sans-serif;
-            overflow: hidden; /* Prevent scrollbars from floating hearts */
-        }
-        .romantic-font {
-            font-family: 'Dancing Script', cursive;
-        }
+        body { overflow-x: hidden; }
         
-        /* Heart Animation Background */
+        /* Particle System */
         .heart-bg {
             position: absolute;
             bottom: -10vh;
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.6);
             display: inline-block;
-            height: 30px;
-            margin: 0 10px;
-            width: 30px;
+            width: var(--heart-size);
+            height: var(--heart-size);
             transform: rotate(-45deg);
-            animation: float 6s linear infinite;
             z-index: 0;
+            pointer-events: none;
+            will-change: transform, opacity;
         }
-        .heart-bg:before, .heart-bg:after {
+        .heart-bg::before, .heart-bg::after {
             content: "";
             position: absolute;
-            background-color: inherit;
-            border-radius: 50%;
-            height: 30px;
-            width: 30px;
-        }
-        .heart-bg:before { top: -15px; left: 0; }
-        .heart-bg:after { left: 15px; top: 0; }
-
-        @keyframes float {
-            0% { transform: translateY(0) rotate(-45deg) scale(0.8); opacity: 0; }
-            50% { opacity: 0.8; }
-            100% { transform: translateY(-120vh) rotate(-45deg) scale(1.2); opacity: 0; }
-        }
-
-        /* Pulse animation for the main heart */
-        .heart-beat {
-            animation: beat 1.5s infinite;
-        }
-        @keyframes beat {
-            0% { transform: scale(1); }
-            14% { transform: scale(1.1); }
-            28% { transform: scale(1); }
-            42% { transform: scale(1.1); }
-            70% { transform: scale(1); }
-        }
-
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-        }
-
-        /* Quote Transition */
-        .quote-container {
-            min-height: 3rem; /* Reserve space to prevent layout jump */
-            transition: opacity 1s ease-in-out;
-            opacity: 1;
-        }
-        .quote-container.fade-out {
-            opacity: 0;
-        }
-
-        /* Modal specific styling */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
+            border-radius: 50%;
+            background-color: inherit;
         }
-        .modal-overlay.open {
-            opacity: 1;
-            visibility: visible;
+        .heart-bg::before { top: -50%; left: 0; }
+        .heart-bg::after { top: 0; left: 50%; }
+
+        /* Glass UI */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
+
+        /* Custom Scrollbar for Modal */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #fbcfe8; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #f472b6; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-pink-500 via-red-400 to-rose-600 min-h-screen flex items-center justify-center text-white relative">
+<body class="bg-gradient-to-br from-rose-500 via-pink-500 to-red-600 min-h-screen flex items-center justify-center text-white relative selection:bg-pink-200 selection:text-pink-900">
 
-    <!-- Floating Background Hearts (Generated via JS) -->
-    <div id="hearts-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+    <div id="hearts-container" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
 
-    <!-- Main Card -->
-    <div class="glass-panel p-8 rounded-3xl shadow-2xl text-center max-w-md w-full mx-4 z-10 transform transition-all hover:scale-[1.02] duration-300">
+    <main class="glass-panel p-8 md:p-12 rounded-[2rem] text-center max-w-lg w-full mx-4 z-10 transition-transform duration-500 hover:scale-[1.01]">
         
-        <!-- The Clickable Heart Button -->
-        <button id="message-trigger" class="text-6xl text-pink-100 mb-2 heart-beat drop-shadow-lg focus:outline-none transform hover:scale-110 transition duration-300" aria-label="Click for a special message">
-            ❤️
+        <button id="message-trigger" class="group relative inline-block mb-6 focus:outline-none" aria-label="Open secret message">
+            <div class="absolute inset-0 bg-pink-400 blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
+            <span class="relative text-7xl transform transition-transform duration-300 group-hover:scale-110 block filter drop-shadow-lg animate-pulse-slow">❤️</span>
+            <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs font-medium tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300 uppercase whitespace-nowrap">Read Message</span>
         </button>
         
-        <h1 class="romantic-font text-5xl md:text-6xl font-bold mb-4 text-white drop-shadow-md">
-            I love you Tara
-        </h1>
+        <h1 class="font-romantic text-5xl md:text-7xl font-bold mb-2 drop-shadow-lg leading-tight">Tara & Adi</h1>
         
-        <p class="text-pink-100 text-lg mb-8 font-light tracking-wide">
-            Together since August 30, 2025
-        </p>
+        <p class="text-pink-100/90 text-sm md:text-base mb-8 font-medium tracking-widest uppercase">In love since August 30, 2025</p>
 
-        <!-- Timer Grid -->
-        <div class="grid grid-cols-4 gap-2 mb-8">
-            <div class="bg-white/20 rounded-lg p-2 backdrop-blur-sm">
-                <span id="days" class="block text-3xl font-bold">0</span>
-                <span class="text-xs uppercase tracking-wider opacity-80">Days</span>
+        <div class="grid grid-cols-4 gap-3 mb-10">
+            <div class="bg-white/10 rounded-xl p-3 backdrop-blur-md border border-white/10 shadow-inner">
+                <span id="days" class="block text-2xl md:text-4xl font-bold font-sans tabular-nums">0</span>
+                <span class="text-[10px] md:text-xs uppercase tracking-wider opacity-80 font-medium">Days</span>
             </div>
-            <div class="bg-white/20 rounded-lg p-2 backdrop-blur-sm">
-                <span id="hours" class="block text-3xl font-bold">0</span>
-                <span class="text-xs uppercase tracking-wider opacity-80">Hours</span>
+            <div class="bg-white/10 rounded-xl p-3 backdrop-blur-md border border-white/10 shadow-inner">
+                <span id="hours" class="block text-2xl md:text-4xl font-bold font-sans tabular-nums">0</span>
+                <span class="text-[10px] md:text-xs uppercase tracking-wider opacity-80 font-medium">Hours</span>
             </div>
-            <div class="bg-white/20 rounded-lg p-2 backdrop-blur-sm">
-                <span id="minutes" class="block text-3xl font-bold">0</span>
-                <span class="text-xs uppercase tracking-wider opacity-80">Mins</span>
+            <div class="bg-white/10 rounded-xl p-3 backdrop-blur-md border border-white/10 shadow-inner">
+                <span id="minutes" class="block text-2xl md:text-4xl font-bold font-sans tabular-nums">0</span>
+                <span class="text-[10px] md:text-xs uppercase tracking-wider opacity-80 font-medium">Mins</span>
             </div>
-            <div class="bg-white/20 rounded-lg p-2 backdrop-blur-sm">
-                <span id="seconds" class="block text-3xl font-bold">0</span>
-                <span class="text-xs uppercase tracking-wider opacity-80">Secs</span>
+            <div class="bg-white/10 rounded-xl p-3 backdrop-blur-md border border-white/10 shadow-inner">
+                <span id="seconds" class="block text-2xl md:text-4xl font-bold font-sans tabular-nums">0</span>
+                <span class="text-[10px] md:text-xs uppercase tracking-wider opacity-80 font-medium">Secs</span>
             </div>
         </div>
 
-        <!-- Rotating Quote -->
-        <div id="quote-display" class="quote-container text-sm text-white/90 italic font-medium tracking-wide">
-            "Every second with you is a gift."
-        </div>
-    </div>
-
-    <!-- Personal Message Modal -->
-    <div id="personal-message-modal" class="modal-overlay">
-        <!-- ADDED pt-10 to push content down -->
-        <div class="bg-white p-8 pt-10 rounded-xl shadow-2xl max-w-sm w-11/12 transform transition-all scale-100">
-            <h2 class="romantic-font text-3xl text-pink-600 mb-4 border-b pb-2">A Secret Message Just for You</h2>
-            <p class="text-gray-700 text-md mb-6 text-left" style="white-space: pre-line;">
-                Baby i really hope you find this secret message,
-
-                Actually the thing is in these 86 Days I have realised that i could never live without you and i really love you and i hope you understand this, i really want you to even if i’m not able to convince my parents for our engagement till April i want you to do something. I’m sure that i’ll convince them for marriage till i’m 19 but right now things are a bit complicated i know you understand that but just so you know i really love you and care for you from the bottom of my heart. I’m really really sure about you… my sahiba my everything you are literally my everything my joonam..
-
-                I know we are young but seriously baby I will marry “YOU”
-
-                You are really special to me ❤️ 
-
-                I know this paragraph isn’t much but yep this is all i’m able to think right now im sorry my love i’ll tell you more things afterwards 
-
-                I love you
+        <div class="min-h-[3.5rem] flex items-center justify-center">
+            <p id="quote-display" class="text-sm md:text-lg text-white italic font-medium transition-opacity duration-1000 opacity-100 max-w-xs mx-auto leading-relaxed">
+                "Every second with you is a gift."
             </p>
-            <p class="text-right text-gray-500 text-sm">- Yours, Adi</p>
-            <button onclick="closeModal()" class="mt-6 w-full bg-pink-500 text-white py-2 rounded-lg font-bold hover:bg-pink-600 transition duration-150">
-                Close
-            </button>
+        </div>
+    </main>
+
+    <div id="personal-message-modal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 invisible transition-all duration-300 bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform scale-95 transition-all duration-300 flex flex-col max-h-[85vh] overflow-hidden">
+            
+            <div class="bg-gradient-to-r from-pink-50 to-white px-6 py-4 border-b border-pink-100 flex justify-between items-center shrink-0">
+                <h2 class="font-romantic text-3xl text-pink-600">My Secret</h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+
+            <div id="modal-content-area" class="p-6 overflow-y-auto custom-scrollbar flex-grow bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
+                
+                <!-- Updated message to use <strong> tags for consistent bolding -->
+                <p id="message-content" class="text-gray-800 text-lg leading-8 font-serif whitespace-pre-line">
+                    Baby, I really hope you find this secret message.
+
+                    Actually, the thing is, in these days I have realized that I could never live without you. I really love you, and I hope you understand this. I really want you to know that even if I’m not able to convince my parents for our engagement by April, I want you to do something...
+
+                    I’m sure that I’ll convince them for marriage by the time I’m 19. Right now, things are a bit complicated, and I know you understand that, but just so you know—I really love you and care for you from the bottom of my heart.
+
+                    I’m really, really sure about you… my Sahiba, my everything, my Joonam.
+
+                    I know we are young, but seriously baby, I will marry <strong>YOU</strong>.
+
+                    You are really special to me. ❤️
+
+                    I know this paragraph isn’t much, but this is all I’m able to think right now. I'm sorry my love, I’ll tell you more things afterwards.
+                </p>
+
+                <!-- Signature is now always visible -->
+                <p class="text-right text-gray-500 text-base mt-8 font-medium italic space-y-2">
+                    <span class="block text-pink-600 text-xl font-romantic">I love you</span>
+                    <span class="block text-sm">- Yours, Adi</span>
+                </p>
+
+            </div>
+
+            <div class="p-4 border-t border-gray-100 bg-gray-50 shrink-0">
+                <button onclick="closeModal()" class="w-full bg-pink-500 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-pink-600 transition-all">Close</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        // Date format: Year, Month (0-indexed, so 7 is August), Day
-        const startDate = new Date(2025, 7, 30, 0, 0, 0).getTime(); 
+        // CONFIGURATION: Only used for the timer and quotes now
+        const CONFIG = {
+            startDate: new Date(2025, 7, 30, 0, 0, 0).getTime(),
+            quotes: [
+                "Every second with you is a gift.",
+                "I love you more than words can say.",
+                "You are my favorite distraction.",
+                "My heart is and always will be yours.",
+                "You make my world brighter.",
+                "To me, you are the world."
+            ],
+        };
 
+        /* --- LOGIC --- */
+        const dom = {
+            days: document.getElementById("days"),
+            hours: document.getElementById("hours"),
+            minutes: document.getElementById("minutes"),
+            seconds: document.getElementById("seconds"),
+            quote: document.getElementById("quote-display"),
+            modal: document.getElementById("personal-message-modal"),
+            container: document.getElementById("hearts-container")
+        };
+
+        // Timer
         function updateTimer() {
-            const now = new Date().getTime();
-            const distance = now - startDate;
-
+            const now = Date.now();
+            const distance = now - CONFIG.startDate;
             if (distance < 0) {
-                // If the date is in the future (safety check)
-                document.getElementById("days").innerText = "0";
-                document.getElementById("hours").innerText = "0";
-                document.getElementById("minutes").innerText = "0";
-                document.getElementById("seconds").innerText = "0";
+                ['days', 'hours', 'minutes', 'seconds'].forEach(id => dom[id].textContent = "0");
                 return;
             }
-
-            // Calculations
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Update DOM
-            document.getElementById("days").innerText = days;
-            document.getElementById("hours").innerText = hours;
-            document.getElementById("minutes").innerText = minutes;
-            document.getElementById("seconds").innerText = seconds;
+            dom.days.textContent = Math.floor(distance / (1000 * 60 * 60 * 24));
+            dom.hours.textContent = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            dom.minutes.textContent = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            dom.seconds.textContent = Math.floor((distance % (1000 * 60)) / 1000);
         }
-
-        // Run immediately and then every second
-        updateTimer();
         setInterval(updateTimer, 1000);
+        updateTimer();
 
-        // --- BACKGROUND HEART GENERATOR ---
+        // Quotes
+        let quoteIndex = 0;
+        setInterval(() => {
+            dom.quote.style.opacity = 0;
+            setTimeout(() => {
+                quoteIndex = (quoteIndex + 1) % CONFIG.quotes.length;
+                dom.quote.textContent = `"${CONFIG.quotes[quoteIndex]}"`;
+                dom.quote.style.opacity = 1;
+            }, 1000);
+        }, 6000);
+
+        // Hearts
         function createHeart() {
+            if (dom.container.childElementCount > 20) return;
             const heart = document.createElement('div');
             heart.classList.add('heart-bg');
-            
-            // Randomize position, size, and animation duration
-            const size = Math.random() * 20 + 20; // Size between 20px and 40px
-            heart.style.height = size + "px";
-            heart.style.width = size + "px";
-            heart.style.left = Math.random() * 100 + "vw";
-            heart.style.animationDuration = Math.random() * 3 + 4 + "s"; // 4-7 seconds
-            
-            // Recalculate :before and :after positions based on new size
+            const size = Math.floor(Math.random() * 30) + 15;
             heart.style.setProperty('--heart-size', `${size}px`);
-
-            // Randomize color slightly (white with varying opacity)
-            heart.style.backgroundColor = `rgba(255, 255, 255, ${Math.random() * 0.3 + 0.1})`;
-            
-            document.getElementById('hearts-container').appendChild(heart);
-            
-            // Cleanup after animation
-            setTimeout(() => {
-                heart.remove();
-            }, 7000);
+            heart.style.left = `${Math.random() * 100}vw`;
+            heart.style.animationDuration = `${Math.random() * 3 + 5}s`;
+            dom.container.appendChild(heart);
+            setTimeout(() => heart.remove(), 8000);
         }
+        setInterval(createHeart, 600);
 
-        // Create a heart every 300ms
-        setInterval(createHeart, 300);
-
-        // --- QUOTE ROTATOR ---
-        const quotes = [
-            "Every second with you is a gift.",
-            "I love you more than words can say.",
-            "You are my favorite distraction.",
-            "My heart is and always will be yours.",
-            "You make my world brighter.",
-            "Forever is a long time, but I wouldn't mind spending it by your side.",
-            "To the world you may be one person, but to me you are the world."
-        ];
-
-        let currentQuoteIndex = 0;
-        const quoteElement = document.getElementById("quote-display");
-
-        function rotateQuote() {
-            // Fade out
-            quoteElement.classList.add("fade-out");
-
-            // Wait for fade out to finish (1s matches CSS transition)
-            setTimeout(() => {
-                currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
-                quoteElement.innerText = `"${quotes[currentQuoteIndex]}"`;
-                
-                // Fade in
-                quoteElement.classList.remove("fade-out");
-            }, 1000); 
-        }
-
-        // Change quote every 6 seconds (1s fade out + 5s display)
-        setInterval(rotateQuote, 6000);
-
-        // --- MODAL LOGIC ---
-        const modal = document.getElementById('personal-message-modal');
-        const trigger = document.getElementById('message-trigger');
-
+        /* --- MODAL LOGIC (Simplified) --- */
+        
         function openModal() {
-            modal.classList.add('open');
+            dom.modal.classList.remove('invisible', 'opacity-0');
+            dom.modal.querySelector('div').classList.remove('scale-95');
+            dom.modal.querySelector('div').classList.add('scale-100');
         }
 
-        function closeModal() {
-            modal.classList.remove('open');
+        window.closeModal = function() {
+            dom.modal.classList.add('invisible', 'opacity-0');
+            dom.modal.querySelector('div').classList.add('scale-95');
+            dom.modal.querySelector('div').classList.remove('scale-100');
         }
 
-        // Event listener to open the modal when the heart is clicked
-        trigger.addEventListener('click', openModal);
-
-        // Optional: Close modal if clicking outside
-        modal.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal-overlay')) {
-                closeModal();
-            }
-        });
-
+        document.getElementById('message-trigger').addEventListener('click', openModal);
+        dom.modal.addEventListener('click', (e) => { if (e.target === dom.modal) closeModal(); });
     </script>
 </body>
 </html>
